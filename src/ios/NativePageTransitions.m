@@ -723,7 +723,7 @@
     uiwebview = ((UIWebView*)self.webView);
   }
   if (href != nil && ![href isEqual:[NSNull null]]) {
-    if (![href hasPrefix:@"#"]) {
+    if (![href hasPrefix:@"#"] && [href rangeOfString:@".html"].location != NSNotFound) {
       // strip any params when looking for the file on the filesystem
       NSString *bareFileName = href;
       NSString *urlParams = nil;
@@ -744,7 +744,16 @@
             NSString *currentUrl = origUrl.absoluteString;
             NSRange lastSlash = [currentUrl rangeOfString:@"/" options:NSBackwardsSearch];
             NSString *path = [currentUrl substringToIndex:lastSlash.location+1];
-            url = [NSURL URLWithString:[path stringByAppendingString:bareFileName]];
+
+
+
+            NSURL * stringUrl = [NSURL URLWithString:path];
+            NSURL * urlByRemovingLastComponent = [stringUrl URLByDeletingLastPathComponent];
+            NSLog(@"%@", urlByRemovingLastComponent);
+
+            url = [urlByRemovingLastComponent URLByAppendingPathComponent:bareFileName];
+
+//            url = [NSURL URLWithString:[urlByRemovingLastComponent.path stringByAppendingString:bareFileName]];
         } else {
             NSString *filePath = bareFileName;
             NSString *replaceWith = [@"/" stringByAppendingString:bareFileName];
